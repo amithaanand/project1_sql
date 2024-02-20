@@ -1,0 +1,222 @@
+project-1
+healthcare_dataset.csv:
+
+create table healthcare_data(name string,age int,gender string,blood_type string,med_cond string,adm_date string,doctor string,hospital string,insurance_pro string,billing_amt string,room_no int,adm_type string,disch_date string,medication string,test_res string)row format delimited fields terminated by ','tblproperties('skip.header.line.count'='1');
+
+load data local inpath '/home/amitha/data/hive/healthcare_dataset.csv' into table healthcare_data;
+select * from healthcare_data limit 5;
++-----------------------+----------------------+-------------------------+-----------------------------+---------------------------+---------------------------+-------------------------+---------------------------+--------------------------------+------------------------------+--------------------------+---------------------------+-----------------------------+-----------------------------+---------------------------+
+| healthcare_data.name  | healthcare_data.age  | healthcare_data.gender  | healthcare_data.blood_type  | healthcare_data.med_cond  | healthcare_data.adm_date  | healthcare_data.doctor  | healthcare_data.hospital  | healthcare_data.insurance_pro  | healthcare_data.billing_amt  | healthcare_data.room_no  | healthcare_data.adm_type  | healthcare_data.disch_date  | healthcare_data.medication  | healthcare_data.test_res  |
++-----------------------+----------------------+-------------------------+-----------------------------+---------------------------+---------------------------+-------------------------+---------------------------+--------------------------------+------------------------------+--------------------------+---------------------------+-----------------------------+-----------------------------+---------------------------+
+| Tiffany Ramirez       | 81                   | Female                  | O-                          | Diabetes                  | 2022-11-17                | Patrick Parker          | Wallace-Hamilton          | Medicare                       | 37490.98336352819            | 146                      | Elective                  | 2022-12-01                  | Aspirin                     | Inconclusive              |
+| Ruben Burns           | 35                   | Male                    | O+                          | Asthma                    | 2023-06-01                | Diane Jackson           | "Burke                    |  Griffin and Cooper"           | UnitedHealthcare             | 47304                    | 404                       | Emergency                   | 2023-06-15                  | Lipitor                   |
+| Chad Byrd             | 61                   | Male                    | B-                          | Obesity                   | 2019-01-09                | Paul Baker              | Walton LLC                | Medicare                       | 36874.89699661277            | 292                      | Emergency                 | 2019-02-08                  | Lipitor                     | Normal                    |
+| Antonio Frederick     | 49                   | Male                    | B-                          | Asthma                    | 2020-05-02                | Brian Chandler          | Garcia Ltd                | Medicare                       | 23303.322092196904           | 480                      | Urgent                    | 2020-05-03                  | Penicillin                  | Abnormal                  |
+| Mrs. Brandy Flowers   | 51                   | Male                    | O-                          | Arthritis                 | 2021-07-09                | Dustin Griffin          | "Jones                    |  Brown and Murray"             | UnitedHealthcare             | 18086                    | 477                       | Urgent                      | 2021-08-02                  | Paracetamol               |
++-----------------------+----------------------+-------------------------+-----------------------------+---------------------------+---------------------------+-------------------------+---------------------------+--------------------------------+------------------------------+--------------------------+---------------------------+-----------------------------+-----------------------------+---------------------------+
+
+ select count(distinct(blood_type)) from healthcare_data; ------>bucketing
++------+
+| _c0  |
++------+
+| 8    |
++------+
+
+create table healthcare_data_bkt(name string,age int,gender string,blood_type string,med_cond string,doctor string,hospital string,insurance_pro string,billing_amt string,room_no int,adm_type string,disch_date string,medication string,test_res string) partitioned by(adm_date string) clustered by(blood_type) into 8 buckets row format delimited fields terminated by ',';
+
+describe healthcare_data;
++----------------+------------+----------+
+|    col_name    | data_type  | comment  |
++----------------+------------+----------+
+| name           | string     |          |
+| age            | int        |          |
+| gender         | string     |          |
+| blood_type     | string     |          |
+| med_cond       | string     |          |
+| adm_date       | string     |          |
+| doctor         | string     |          |
+| hospital       | string     |          |
+| insurance_pro  | string     |          |
+| billing_amt    | string     |          |
+| room_no        | int        |          |
+| adm_type       | string     |          |
+| disch_date     | string     |          |
+| medication     | string     |          |
+| test_res       | string     |          |
++----------------+------------+----------+
+
+describe healthcare_data_bkt;
++--------------------------+-----------------------+-----------------------+
+|         col_name         |       data_type       |        comment        |
++--------------------------+-----------------------+-----------------------+
+| name                     | string                |                       |
+| age                      | int                   |                       |
+| gender                   | string                |                       |
+| blood_type               | string                |                       |
+| med_cond                 | string                |                       |
+| doctor                   | string                |                       |
+| hospital                 | string                |                       |
+| insurance_pro            | string                |                       |
+| billing_amt              | string                |                       |
+| room_no                  | int                   |                       |
+| adm_type                 | string                |                       |
+| disch_date               | string                |                       |
+| medication               | string                |                       |
+| test_res                 | string                |                       |
+| adm_date                 | string                |                       |
+|                          | NULL                  | NULL                  |
+| # Partition Information  | NULL                  | NULL                  |
+| # col_name               | data_type             | comment               |
+|                          | NULL                  | NULL                  |
+| adm_date                 | string                |                       |
++--------------------------+-----------------------+-----------------------+
+
+describe formatted healthcare_data_bkt;
++-------------------------------+----------------------------------------------------+-----------------------------+
+|           col_name            |                     data_type                      |           comment           |
++-------------------------------+----------------------------------------------------+-----------------------------+
+| # col_name                    | data_type                                          | comment                     |
+|                               | NULL                                               | NULL                        |
+| name                          | string                                             |                             |
+| age                           | int                                                |                             |
+| gender                        | string                                             |                             |
+| blood_type                    | string                                             |                             |
+| med_cond                      | string                                             |                             |
+| doctor                        | string                                             |                             |
+| hospital                      | string                                             |                             |
+| insurance_pro                 | string                                             |                             |
+| billing_amt                   | string                                             |                             |
+| room_no                       | int                                                |                             |
+| adm_type                      | string                                             |                             |
+| disch_date                    | string                                             |                             |
+| medication                    | string                                             |                             |
+| test_res                      | string                                             |                             |
+|                               | NULL                                               | NULL                        |
+| # Partition Information       | NULL                                               | NULL                        |
+| # col_name                    | data_type                                          | comment                     |
+|                               | NULL                                               | NULL                        |
+| adm_date                      | string                                             |                             |
+|                               | NULL                                               | NULL                        |
+| # Detailed Table Information  | NULL                                               | NULL                        |
+| Database:                     | batch75                                            | NULL                        |
+| Owner:                        | amitha                                             | NULL                        |
+| CreateTime:                   | Mon Dec 25 16:38:28 IST 2023                       | NULL                        |
+| LastAccessTime:               | UNKNOWN                                            | NULL                        |
+| Retention:                    | 0                                                  | NULL                        |
+| Location:                     | hdfs://localhost:9000/user/hive/warehouse/batch75.db/healthcare_data_bkt | NULL                        |
+| Table Type:                   | MANAGED_TABLE                                      | NULL                        |
+| Table Parameters:             | NULL                                               | NULL                        |
+|                               | COLUMN_STATS_ACCURATE                              | {\"BASIC_STATS\":\"true\"}  |
+|                               | numFiles                                           | 0                           |
+|                               | numPartitions                                      | 0                           |
+|                               | numRows                                            | 0                           |
+|                               | rawDataSize                                        | 0                           |
+|                               | totalSize                                          | 0                           |
+|                               | transient_lastDdlTime                              | 1703502508                  |
+|                               | NULL                                               | NULL                        |
+| # Storage Information         | NULL                                               | NULL                        |
+| SerDe Library:                | org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe | NULL                        |
+| InputFormat:                  | org.apache.hadoop.mapred.TextInputFormat           | NULL                        |
+| OutputFormat:                 | org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat | NULL                        |
+| Compressed:                   | No                                                 | NULL                        |
+| Num Buckets:                  | 8                                                  | NULL                        |
+| Bucket Columns:               | [blood_type]                                       | NULL                        |
+| Sort Columns:                 | []                                                 | NULL                        |
+| Storage Desc Params:          | NULL                                               | NULL                        |
+|                               | field.delim                                        | ,                           |
+|                               | serialization.format                               | ,                           |
++-------------------------------+----------------------------------------------------+-----------------------------+
+
+set hive.exec.dynamic.partition=true;
+set hive.exec.dynamic.partition.mode=nonstrict;
+
+insert into healthcare_data_bkt partition(adm_date) select name, age,gender,blood_type,med_cond,doctor,hospital,insurance_pro,billing_amt,room_no,adm_type,disch_date,medication,test_res,adm_date from healthcare_data;
+
+questions:
+Q1.find how many are there with arthritis above age 50?
+select * from healthcare_data_bkt  where  med_cond='Arthritis' and age>=50 limit 10;
+
++---------------------------+--------------------------+-----------------------------+---------------------------------+-------------------------------+-----------------------------+-------------------------------+------------------------------------+----------------------------------+------------------------------+-------------------------------+---------------------------------+---------------------------------+-------------------------------+-------------------------------+
+| healthcare_data_bkt.name  | healthcare_data_bkt.age  | healthcare_data_bkt.gender  | healthcare_data_bkt.blood_type  | healthcare_data_bkt.med_cond  | healthcare_data_bkt.doctor  | healthcare_data_bkt.hospital  | healthcare_data_bkt.insurance_pro  | healthcare_data_bkt.billing_amt  | healthcare_data_bkt.room_no  | healthcare_data_bkt.adm_type  | healthcare_data_bkt.disch_date  | healthcare_data_bkt.medication  | healthcare_data_bkt.test_res  | healthcare_data_bkt.adm_date  |
++---------------------------+--------------------------+-----------------------------+---------------------------------+-------------------------------+-----------------------------+-------------------------------+------------------------------------+----------------------------------+------------------------------+-------------------------------+---------------------------------+---------------------------------+-------------------------------+-------------------------------+
+| Heather Stewart           | 85                       | Female                      | B+                              | Arthritis                     | Blake Lara                  | White LLC                     | UnitedHealthcare                   | 36241.46652564103                | 495                          | Urgent                        | 2018-11-22                      | Lipitor                         | Normal                        | 2018-11-10                    |
+| Benjamin Duncan           | 62                       | Female                      | AB+                             | Arthritis                     | Erica Norton                | Baker-Roach                   | Cigna                              | 22621.535633779225               | 199                          | Elective                      | 2018-12-03                      | Aspirin                         | Abnormal                      | 2018-11-13                    |
+| Madeline Vaughan          | 69                       | Female                      | A+                              | Arthritis                     | Brenda Lawson               | "Duffy                        |  Potts and Rodgers"                | UnitedHealthcare                 | 39472                        | 337                           | Elective                        | 2018-11-25                      | Penicillin                    | 2018-11-14                    |
+| Matthew Brooks            | 54                       | Male                        | AB-                             | Arthritis                     | Jacob Johnson               | "Jones                        |  Morales and Anderson"             | Blue Cross                       | 32330                        | 148                           | Urgent                          | 2018-12-08                      | Lipitor                       | 2018-11-15                    |
+| Robert Davis              | 68                       | Male                        | A+                              | Arthritis                     | Kyle Jordan PhD             | Davis and Sons                | Cigna                              | 32850.871461053015               | 490                          | Elective                      | 2018-12-14                      | Lipitor                         | Abnormal                      | 2018-11-16                    |
+| Jason Horn                | 81                       | Female                      | AB+                             | Arthritis                     | David Williams              | "Rosales                      |  Lyons and Aguilar"                | Cigna                            | 5092                         | 182                           | Urgent                          | 2018-12-08                      | Aspirin                       | 2018-11-18                    |
+| Jesse Anderson            | 60                       | Male                        | B+                              | Arthritis                     | Cheryl Wilson               | Day Inc                       | Aetna                              | 27229.912943286738               | 301                          | Urgent                        | 2018-11-25                      | Paracetamol                     | Normal                        | 2018-11-19                    |
+| Chelsea Henderson         | 70                       | Female                      | A-                              | Arthritis                     | Benjamin Stevens            | "Yang                         |  Burton and Mata"                  | Cigna                            | 20679                        | 462                           | Emergency                       | 2018-11-27                      | Penicillin                    | 2018-11-20                    |
+| Kenneth Little            | 75                       | Female                      | A-                              | Arthritis                     | Lisa Barnes                 | Johnson-Richards              | Medicare                           | 19694.33458154058                | 432                          | Emergency                     | 2018-12-04                      | Penicillin                      | Normal                        | 2018-11-24                    |
+| Jennifer Johnston         | 65                       | Female                      | A+                              | Arthritis                     | Christopher Jones           | "Hart                         |  Calderon and Vasquez"             | Blue Cross                       | 20205                        | 167                           | Emergency                       | 2018-12-19                      | Ibuprofen                     | 2018-11-28                    |
++---------------------------+--------------------------+-----------------------------+---------------------------------+-------------------------------+-----------------------------+-------------------------------+------------------------------------+----------------------------------+------------------------------+-------------------------------+---------------------------------+---------------------------------+-------------------------------+-------------------------------+
+
+select name from healthcare_data_bkt  where  med_cond='Arthritis' and age>=50 limit 10;
++--------------------+
+|        name        |
++--------------------+
+| Heather Stewart    |
+| Benjamin Duncan    |
+| Madeline Vaughan   |
+| Matthew Brooks     |
+| Robert Davis       |
+| Jason Horn         |
+| Jesse Anderson     |
+| Chelsea Henderson  |
+| Kenneth Little     |
+| Jennifer Johnston  |
++--------------------+
+
+Q2.Write a query to fetch all the male patients name who are having either of the diseases  ‘Asthma’ and ‘Hypertension’ ?
+select *  from healthcare_data_bkt  where  gender='Male' and (med_cond='Asthma' or med_cond='Hypertension') limit 5;
++---------------------------+--------------------------+-----------------------------+---------------------------------+-------------------------------+-----------------------------+-------------------------------+------------------------------------+----------------------------------+------------------------------+-------------------------------+---------------------------------+---------------------------------+-------------------------------+-------------------------------+
+| healthcare_data_bkt.name  | healthcare_data_bkt.age  | healthcare_data_bkt.gender  | healthcare_data_bkt.blood_type  | healthcare_data_bkt.med_cond  | healthcare_data_bkt.doctor  | healthcare_data_bkt.hospital  | healthcare_data_bkt.insurance_pro  | healthcare_data_bkt.billing_amt  | healthcare_data_bkt.room_no  | healthcare_data_bkt.adm_type  | healthcare_data_bkt.disch_date  | healthcare_data_bkt.medication  | healthcare_data_bkt.test_res  | healthcare_data_bkt.adm_date  |
++---------------------------+--------------------------+-----------------------------+---------------------------------+-------------------------------+-----------------------------+-------------------------------+------------------------------------+----------------------------------+------------------------------+-------------------------------+---------------------------------+---------------------------------+-------------------------------+-------------------------------+
+| Chelsea Smith             | 49                       | Male                        | B-                              | Asthma                        | Brandon Jackson             | Grant Ltd                     | Cigna                              | 46316.393646287564               | 378                          | Elective                      | 2018-11-10                      | Penicillin                      | Inconclusive                  | 2018-10-30                    |
+| Jennifer Reid             | 59                       | Male                        | O+                              | Asthma                        | Charles Chambers            | "Griffin                      |  Brown and Kline"                  | UnitedHealthcare                 | 3700                         | 412                           | Emergency                       | 2018-11-01                      | Lipitor                       | 2018-10-30                    |
+| Joshua Simpson            | 62                       | Male                        | AB-                             | Hypertension                  | Melinda Roy                 | Dickerson Group               | Medicare                           | 42411.20965936169                | 145                          | Emergency                     | 2018-11-12                      | Lipitor                         | Normal                        | 2018-11-01                    |
+| Sarah Roberts             | 32                       | Male                        | B-                              | Asthma                        | Glenda Crane                | Castaneda PLC                 | Cigna                              | 34521.47185557458                | 178                          | Elective                      | 2018-12-04                      | Paracetamol                     | Inconclusive                  | 2018-11-05                    |
+| Steven Walters            | 23                       | Male                        | B-                              | Asthma                        | Nathaniel Dawson            | "Fernandez                    |  Schwartz and Ferguson"            | Blue Cross                       | 34022                        | 136                           | Emergency                       | 2018-11-29                      | Aspirin                       | 2018-11-06                    |
++---------------------------+--------------------------+-----------------------------+---------------------------------+-------------------------------+-----------------------------+-------------------------------+------------------------------------+----------------------------------+------------------------------+-------------------------------+---------------------------------+---------------------------------+-------------------------------+-------------------------------+
+
+Q3.print all patients having name starts with 'Ra'
+select * from healthcare_data_bkt  where  name like 'Ra%';
++---------------------------+--------------------------+-----------------------------+---------------------------------+-------------------------------+-----------------------------+-------------------------------+------------------------------------+----------------------------------+------------------------------+-------------------------------+---------------------------------+---------------------------------+-------------------------------+-------------------------------+
+| healthcare_data_bkt.name  | healthcare_data_bkt.age  | healthcare_data_bkt.gender  | healthcare_data_bkt.blood_type  | healthcare_data_bkt.med_cond  | healthcare_data_bkt.doctor  | healthcare_data_bkt.hospital  | healthcare_data_bkt.insurance_pro  | healthcare_data_bkt.billing_amt  | healthcare_data_bkt.room_no  | healthcare_data_bkt.adm_type  | healthcare_data_bkt.disch_date  | healthcare_data_bkt.medication  | healthcare_data_bkt.test_res  | healthcare_data_bkt.adm_date  |
++---------------------------+--------------------------+-----------------------------+---------------------------------+-------------------------------+-----------------------------+-------------------------------+------------------------------------+----------------------------------+------------------------------+-------------------------------+---------------------------------+---------------------------------+-------------------------------+-------------------------------+
+| Ray Patterson             | 34                       | Female                      | B+                              | Arthritis                     | George Hill                 | Jordan LLC                    | Medicare                           | 17020.934264470074               | 162                          | Elective                      | 2018-11-22                      | Aspirin                         | Abnormal                      | 2018-11-07                    |
+| Rachel Sanchez            | 77                       | Male                        | A+                              | Hypertension                  | Cathy Byrd                  | Brown-Brooks                  | Aetna                              | 17283.05696012245                | 349                          | Urgent                        | 2018-11-16                      | Aspirin                         | Inconclusive                  | 2018-11-13                    |
+| Rachel Bray               | 18                       | Female                      | AB-                             | Hypertension                  | Alexis Nolan                | Fuller-Huff                   | Cigna                              | 10170.08559278319                | 206                          | Emergency                     | 2018-11-20                      | Paracetamol                     | Inconclusive                  | 2018-11-17                    |
+| Rachel Morales            | 31                       | Male                        | AB-                             | Hypertension                  | Peter Bailey                | Yates LLC                     | UnitedHealthcare                   | 10333.001823102266               | 184                          | Urgent                        | 2018-12-22                      | Aspirin                         | Inconclusive                  | 2018-12-10                    |
+| Rachel Vaughan            | 30                       | Female                      | AB-                             | Obesity                       | Robin Rose                  | "Brown                        |  Moore and Sanchez"                | UnitedHealthcare                 | 20452                        | 431                           | Emergency                       | 2019-02-16                      | Ibuprofen                     | 2019-01-20                    |
++---------------------------+--------------------------+-----------------------------+---------------------------------+-------------------------------+-----------------------------+-------------------------------+------------------------------------+----------------------------------+------------------------------+-------------------------------+---------------------------------+---------------------------------+-------------------------------+-------------------------------+
+
+Q4.fetch the count of patients  who were admitted in the room no 392?
+select count (*) as cnt from healthcare_data_bkt where room_no='392';
++------+
+| cnt  |
++------+
+| 12   |
++------+
+
+Q5.select * from healthcare_data_bkt where insurance_pro='UnitedHealthcare' limit 5;
++---------------------------+--------------------------+-----------------------------+---------------------------------+-------------------------------+-----------------------------+-------------------------------+------------------------------------+----------------------------------+------------------------------+-------------------------------+---------------------------------+---------------------------------+-------------------------------+-------------------------------+
+| healthcare_data_bkt.name  | healthcare_data_bkt.age  | healthcare_data_bkt.gender  | healthcare_data_bkt.blood_type  | healthcare_data_bkt.med_cond  | healthcare_data_bkt.doctor  | healthcare_data_bkt.hospital  | healthcare_data_bkt.insurance_pro  | healthcare_data_bkt.billing_amt  | healthcare_data_bkt.room_no  | healthcare_data_bkt.adm_type  | healthcare_data_bkt.disch_date  | healthcare_data_bkt.medication  | healthcare_data_bkt.test_res  | healthcare_data_bkt.adm_date  |
++---------------------------+--------------------------+-----------------------------+---------------------------------+-------------------------------+-----------------------------+-------------------------------+------------------------------------+----------------------------------+------------------------------+-------------------------------+---------------------------------+---------------------------------+-------------------------------+-------------------------------+
+| Ruth Meyer                | 42                       | Female                      | A-                              | Hypertension                  | Natalie Andrews             | Wang Inc                      | UnitedHealthcare                   | 2012.02631439907                 | 105                          | Elective                      | 2018-12-01                      | Ibuprofen                       | Inconclusive                  | 2018-11-02                    |
+| Anthony Thompson          | 78                       | Female                      | B+                              | Cancer                        | Alisha Hernandez            | Murphy LLC                    | UnitedHealthcare                   | 38150.36697658243                | 366                          | Emergency                     | 2018-12-08                      | Ibuprofen                       | Abnormal                      | 2018-11-08                    |
+| Pam Cantu                 | 54                       | Female                      | A-                              | Asthma                        | Jonathan Rodriguez          | Burton-Hopkins                | UnitedHealthcare                   | 3623.40823141465                 | 361                          | Urgent                        | 2018-11-19                      | Paracetamol                     | Abnormal                      | 2018-11-09                    |
+| Mindy Wood                | 80                       | Male                        | O+                              | Obesity                       | Phillip Shepherd            | Holland-Evans                 | UnitedHealthcare                   | 18763.54096410252                | 116                          | Urgent                        | 2018-11-10                      | Aspirin                         | Normal                        | 2018-11-09                    |
+| Heather Stewart           | 85                       | Female                      | B+                              | Arthritis                     | Blake Lara                  | White LLC                     | UnitedHealthcare                   | 36241.46652564103                | 495                          | Urgent                        | 2018-11-22                      | Lipitor                         | Normal                        | 2018-11-10                    |
++---------------------------+--------------------------+-----------------------------+---------------------------------+-------------------------------+-----------------------------+-------------------------------+------------------------------------+----------------------------------+------------------------------+-------------------------------+---------------------------------+---------------------------------+-------------------------------+-------------------------------+
+
+
+Q6.fetch details of patients under 'Michael Chang' and hospital 'Schultz-Powers'?
+select * from healthcare_data_bkt where doctor='Michael Chang' and hospital='Schultz-Powers';
++---------------------------+--------------------------+-----------------------------+---------------------------------+-------------------------------+-----------------------------+-------------------------------+------------------------------------+----------------------------------+------------------------------+-------------------------------+---------------------------------+---------------------------------+-------------------------------+-------------------------------+
+| healthcare_data_bkt.name  | healthcare_data_bkt.age  | healthcare_data_bkt.gender  | healthcare_data_bkt.blood_type  | healthcare_data_bkt.med_cond  | healthcare_data_bkt.doctor  | healthcare_data_bkt.hospital  | healthcare_data_bkt.insurance_pro  | healthcare_data_bkt.billing_amt  | healthcare_data_bkt.room_no  | healthcare_data_bkt.adm_type  | healthcare_data_bkt.disch_date  | healthcare_data_bkt.medication  | healthcare_data_bkt.test_res  | healthcare_data_bkt.adm_date  |
++---------------------------+--------------------------+-----------------------------+---------------------------------+-------------------------------+-----------------------------+-------------------------------+------------------------------------+----------------------------------+------------------------------+-------------------------------+---------------------------------+---------------------------------+-------------------------------+-------------------------------+
+| Steven Bennett            | 79                       | Male                        | O-                              | Asthma                        | Michael Chang               | Schultz-Powers                | Blue Cross                         | 42610.70456262938                | 364                          | Urgent                        | 2022-12-26                      | Penicillin                      | Abnormal                      | 2022-12-12                    |
++---------------------------+--------------------------+-----------------------------+---------------------------------+-------------------------------+-----------------------------+-------------------------------+------------------------------------+----------------------------------+------------------------------+-------------------------------+---------------------------------+---------------------------------+-------------------------------+-------------------------------+
+
+
