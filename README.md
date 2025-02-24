@@ -12,7 +12,9 @@ Project 1: Helathcare datasets
    Q6.fetch details of patients under 'Michael Chang' and hospital 'Schultz-Powers'?
 
 Project 2: 100 Best movies on Netflix
+<br>
 1.Table Creation and Loading :  begins with the creation of a table netflix_movies ,loading data into it from a csv file downloaded from Kaggle.Then create bucket tablenetflix_movies_bkt partitioned by year and clustered by score.
+<br>
 2. SQL Queries : various sql queries are performed to extract specific information
    q1.find the title of movie who got highest and lowest score.
    q2.find the query to retrieve movie_title and maximum score for each movie from the table.
