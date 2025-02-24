@@ -2,7 +2,7 @@
 Text contains SQL queries and commands related to managing and querying a table name healthcare_data_bkt and netflix_movies_bkt in a Hive environment. Here's a brief description of the content:
 
 Project 1: Helathcare datasets
-1. Table Creation and Loading :  begins with the creation of a table healthcare_data ,loading data into it from a csv file downloaded from Kaggle.Then create bucket table healthcare_data_bkt partitioned by adm_data and clustered by bllod_type.
+1. Table Creation and Loading :  begins with the creation of a table healthcare_data ,loading data into it from a csv file downloaded from Kaggle.Then create bucket table healthcare_data_bkt partitioned by adm_data and clustered by blood_type.
 2. SQL Queries : various sql queries are performed to extract specific information
    <br>
    Q1.find how many are there with arthritis above age 50?
@@ -23,7 +23,7 @@ Project 2: 100 Best movies on Netflix
 1.Table Creation and Loading :  begins with the creation of a table netflix_movies ,loading data into it from a csv file downloaded from Kaggle.Then create bucket tablenetflix_movies_bkt partitioned by year and clustered by score.
 <br>
 2. SQL Queries : various sql queries are performed to extract specific information
-<br>
+   <br>
    q1.find the title of movie who got highest and lowest score.
    <br>
    q2.find the query to retrieve movie_title and maximum score for each movie from the table.
