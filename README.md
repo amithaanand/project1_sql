@@ -19,8 +19,9 @@ Project 1: Helathcare datasets
    <br>
 
 Project 2: 100 Best movies on Netflix
+   <br>
 1.Table Creation and Loading :  begins with the creation of a table netflix_movies ,loading data into it from a csv file downloaded from Kaggle.Then create bucket tablenetflix_movies_bkt partitioned by year and clustered by score.
-<br>
+   <br>
 2. SQL Queries : various sql queries are performed to extract specific information
    <br>
    q1.find the title of movie who got highest and lowest score.
